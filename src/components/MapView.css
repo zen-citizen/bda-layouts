@@ -1,0 +1,225 @@
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* On mobile, adjust map container to allow attribution visibility */
+@media (max-width: 768px) {
+  .map-container {
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    flex: 1;
+    min-height: 0;
+  }
+  
+  /* Map pane should fill container - attribution will overlay at bottom */
+  .map-container .leaflet-map-pane {
+    height: 100% !important;
+  }
+  
+  /* Ensure Leaflet container fills parent */
+  .map-container .leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+  }
+}
+
+.map-container .leaflet-control-container {
+  overflow: visible;
+}
+
+/* Move attribution up so it's fully visible without moving the map */
+.map-container .leaflet-control-attribution {
+  bottom: 8px !important;
+  transform: translateY(0) !important;
+  white-space: nowrap !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+}
+
+/* Reduce marker shadow opacity */
+.leaflet-marker-shadow {
+  opacity: 0.3 !important;
+  filter: opacity(30%);
+}
+
+/* Dim satellite base map slightly */
+.map-container.satellite-view .leaflet-tile-container img {
+  filter: brightness(0.85) contrast(0.95);
+}
+
+/* Move zoom controls to top-right */
+.map-container .leaflet-control-zoom {
+  position: absolute !important;
+  top: 10px !important;
+  left: auto !important;
+  bottom: auto !important;
+  right: 10px !important;
+  margin: 0 !important;
+  z-index: 1001 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.map-container .leaflet-control-zoom a {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Hide any lingering tooltips when modal is open */
+body:has(.modal-overlay) .leaflet-tooltip {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Add rounded corners and increase padding on Leaflet tooltips */
+.leaflet-tooltip {
+  border-radius: 8px !important;
+  padding: 12px 12px 8px 12px !important;
+}
+
+.marker-tooltip {
+  min-width: 200px;
+  text-align: left;
+}
+
+.marker-tooltip strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4B2840;
+  font-size: 1rem;
+}
+
+.tooltip-site-no {
+  font-weight: 600;
+  color: #4B2840;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.marker-tooltip div {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.tooltip-hint {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #eee;
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 2rem;
+  left: 0.75rem;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  pointer-events: auto;
+  font-size: 0.75rem;
+}
+
+.map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.map-legend-item:hover {
+  opacity: 0.8;
+}
+
+.map-legend-item-hidden {
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.map-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  /* Ensure control container allows attribution to be visible */
+  /* Position it to cover the entire map area so attribution can be positioned anywhere */
+  .map-container .leaflet-control-container {
+    overflow: visible !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important; /* Allow map interaction, but enable pointer events on controls */
+    z-index: 1000 !important;
+  }
+  
+  /* Re-enable pointer events on controls themselves */
+  .map-container .leaflet-control-container > * {
+    pointer-events: auto !important;
+  }
+  
+  .map-container .leaflet-control-attribution {
+    right: 8px !important; /* Position from right edge */
+    left: auto !important;
+    bottom: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 6px 10px !important; /* Increased padding for taller box */
+    max-width: calc(100vw - 24px) !important; /* Use viewport width, account for margins */
+    width: auto !important;
+    font-size: 10px !important;
+    white-space: nowrap !important; /* Prevent wrapping to multiple lines */
+    overflow: visible !important; /* Prevent clipping */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10000 !important; /* Very high z-index to ensure it's on top */
+    pointer-events: auto !important;
+    transform: none !important;
+    background: rgba(255, 255, 255, 0.95) !important; /* Slightly more opaque for better visibility */
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important; /* Slightly stronger shadow */
+    /* Ensure it's positioned within visible bounds */
+    max-height: none !important;
+    height: auto !important;
+    min-height: 24px !important; /* Increased minimum height */
+    line-height: 1.4 !important; /* Better line height for taller box */
+    text-align: left !important;
+    box-sizing: border-box !important; /* Ensure padding is included in width calculation */
+  }
+}
