@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 export const layerConfig = {
   "BDA Layouts": {
     order: 1,
-    label: "BDA",
+    label: "BDA Allotted",
     color: "#0F9D58",
     weight: 2,
     opacity: 0.8,
@@ -24,7 +24,7 @@ export const layerConfig = {
   },
   "Approved Layouts": {
     order: 2,
-    label: "Approved",
+    label: "BDA Approved",
     color: "#FFEA00",
     weight: 2,
     opacity: 0.8,
