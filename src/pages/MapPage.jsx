@@ -125,7 +125,7 @@ function MapPage() {
               <div
                 className="sidebar-folder-header"
                 style={{
-                  color: "#000",
+                  color: layerConfig[folder]?.textColor,
                   backgroundColor: layerConfig[folder]?.color
                 }}
               >

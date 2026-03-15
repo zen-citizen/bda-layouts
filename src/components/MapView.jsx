@@ -269,7 +269,13 @@ function MapView({
                   className="map-legend-swatch"
                   style={{ background: hidden ? "#ccc" : style.color }}
                 >
-                  {!hidden && <Check size={10} strokeWidth={3} color="#fff" />}
+                  {!hidden && (
+                    <Check
+                      size={10}
+                      strokeWidth={3}
+                      color={layerConfig[name]?.textColor}
+                    />
+                  )}
                 </span>
                 <span>{layerConfig[name]?.label}</span>
               </div>

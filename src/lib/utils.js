@@ -9,7 +9,8 @@ export const layerConfig = {
     weight: 2,
     opacity: 0.8,
     fillColor: "#0F9D58",
-    fillOpacity: 0.15
+    fillOpacity: 0.15,
+    textColor: "#fff"
   },
   "Illegal Layouts": {
     order: 3,
@@ -18,7 +19,8 @@ export const layerConfig = {
     weight: 2,
     opacity: 0.8,
     fillColor: "#E65100",
-    fillOpacity: 0.15
+    fillOpacity: 0.15,
+    textColor: "#fff"
   },
   "Approved Layouts": {
     order: 2,
@@ -27,7 +29,8 @@ export const layerConfig = {
     weight: 2,
     opacity: 0.8,
     fillColor: "#FFEA00",
-    fillOpacity: 0.15
+    fillOpacity: 0.15,
+    textColor: "#000"
   }
 };
 
