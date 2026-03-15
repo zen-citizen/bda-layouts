@@ -195,6 +195,37 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* ── Sidebar footer ── */
+.sidebar-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.sidebar-footer-source {
+  color: #666;
+}
+
+.sidebar-footer-links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sidebar-footer-link {
+  color: #888;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sidebar-footer-link:hover {
+  color: #4b2840;
+}
+
 /* ── Mobile bar & overlay — hidden on desktop ── */
 .sidebar-mobile-bar {
   display: none;
@@ -237,6 +268,11 @@
     padding: 0.25rem;
     border-radius: 4px;
   }
+  .sidebar-menu-button-mobile {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
 
   .sidebar-menu-button:active {
     background: #f0e8ee;
@@ -252,8 +288,8 @@
   }
 
   .sidebar-overlay-panel {
-    width: 80%;
-    max-width: 360px;
+    width: 100%;
+    /* max-width: 360px; */
     background: #fff;
     display: flex;
     flex-direction: column;

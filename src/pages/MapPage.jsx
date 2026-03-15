@@ -6,7 +6,7 @@ import { parseKML } from "../lib/kmlParser";
 import "./MapPage.css";
 
 function MapPage() {
-  const [mapViewMode, setMapViewMode] = useState("satellite");
+  const [mapViewMode, setMapViewMode] = useState("street");
   const [boundaries, setBoundaries] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,6 +85,33 @@ function MapPage() {
     return result;
   }, [layoutsByFolder, searchQuery, folderFilter]);
 
+  const sidebarFooter = (
+    <div className="sidebar-footer">
+      <div className="sidebar-footer-source">Data Source: BDA</div>
+      <div className="sidebar-footer-links">
+        <a href="mailto:info@zencitizen.in" className="sidebar-footer-link">
+          Feedback
+        </a>
+        <a
+          href="https://github.com/zen-citizen/bda-layouts"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sidebar-footer-link"
+        >
+          Open Source
+        </a>
+        <a
+          href="https://zencitizen.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sidebar-footer-link"
+        >
+          Volunteer with Zen Citizen
+        </a>
+      </div>
+    </div>
+  );
+
   const sidebarContent = (
     <>
       <div className="sidebar-header">
@@ -95,6 +122,7 @@ function MapPage() {
         <input
           type="text"
           placeholder="Search layouts..."
+          autoFocus
           className="sidebar-search-input"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -152,6 +180,7 @@ function MapPage() {
           ))
         )}
       </div>
+      {sidebarFooter}
     </>
   );
 
@@ -168,7 +197,7 @@ function MapPage() {
           onClick={() => setMenuOpen(true)}
           aria-label="Open menu"
         >
-          <Menu size={22} />
+          <Search size={22} />
         </button>
       </div>
 
@@ -181,7 +210,7 @@ function MapPage() {
           >
             <div className="sidebar-overlay-close">
               <button
-                className="sidebar-menu-button"
+                className="sidebar-menu-button sidebar-menu-button-mobile"
                 onClick={() => setMenuOpen(false)}
                 aria-label="Close menu"
               >
