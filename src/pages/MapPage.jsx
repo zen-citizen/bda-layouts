@@ -11,12 +11,15 @@ function MapPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLayout, setSelectedLayout] = useState(null);
+  const [folderFilter, setFolderFilter] = useState("");
   const sidebarListRef = useRef(null);
 
   // Scroll the active item into view when selectedLayout changes
   useEffect(() => {
     if (!selectedLayout || !sidebarListRef.current) return;
-    const active = sidebarListRef.current.querySelector(".sidebar-layout-item.active");
+    const active = sidebarListRef.current.querySelector(
+      ".sidebar-layout-item.active"
+    );
     if (active) {
       active.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
@@ -68,17 +71,19 @@ function MapPage() {
   }, [boundaries]);
 
   const filteredLayoutsByFolder = useMemo(() => {
-    if (!searchQuery.trim()) return layoutsByFolder;
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.trim().toLowerCase();
     const result = {};
     for (const [folder, names] of Object.entries(layoutsByFolder)) {
-      const filtered = names.filter((name) => name.toLowerCase().includes(query));
+      if (folderFilter && folder !== folderFilter) continue;
+      const filtered = query
+        ? names.filter((name) => name.toLowerCase().includes(query))
+        : names;
       if (filtered.length > 0) {
         result[folder] = filtered;
       }
     }
     return result;
-  }, [layoutsByFolder, searchQuery]);
+  }, [layoutsByFolder, searchQuery, folderFilter]);
 
   const sidebarContent = (
     <>
@@ -95,6 +100,22 @@ function MapPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+      <div className="sidebar-filter">
+        <select
+          className="sidebar-filter-select"
+          value={folderFilter}
+          onChange={(e) => setFolderFilter(e.target.value)}
+        >
+          <option value="">All Layouts</option>
+          {Object.entries(layerConfig)
+            .sort(([, a], [, b]) => a.order - b.order)
+            .map(([key, cfg]) => (
+              <option key={key} value={key}>
+                {cfg.label}
+              </option>
+            ))}
+        </select>
+      </div>
       <div className="sidebar-list" ref={sidebarListRef}>
         {Object.keys(filteredLayoutsByFolder).length === 0 ? (
           <div className="sidebar-no-results">No layout/region found.</div>
@@ -104,16 +125,21 @@ function MapPage() {
               <div
                 className="sidebar-folder-header"
                 style={{
-                  color: "#fff",
-                  backgroundColor: layerConfig[folder]?.color,
+                  color: "#000",
+                  backgroundColor: layerConfig[folder]?.color
                 }}
               >
-                {folder}
+                {layerConfig[folder]?.label}
               </div>
               {names.map((name) => (
                 <div
                   key={name}
-                  className={`sidebar-layout-item ${selectedLayout?.name === name && selectedLayout?.folder === folder ? "active" : ""}`}
+                  className={`sidebar-layout-item ${
+                    selectedLayout?.name === name &&
+                    selectedLayout?.folder === folder
+                      ? "active"
+                      : ""
+                  }`}
                   onClick={() => {
                     setSelectedLayout({ name, folder });
                     setMenuOpen(false);
@@ -169,23 +195,36 @@ function MapPage() {
 
       {/* Map */}
       <div className="map-area">
-        <div className="map-view-toggle-floating" role="group" aria-label="Map view mode">
+        <div
+          className="map-view-toggle-floating"
+          role="group"
+          aria-label="Map view mode"
+        >
           <button
             type="button"
-            className={`map-view-toggle-button ${mapViewMode === "street" ? "active" : ""}`}
+            className={`map-view-toggle-button ${
+              mapViewMode === "street" ? "active" : ""
+            }`}
             onClick={() => setMapViewMode("street")}
           >
             Map
           </button>
           <button
             type="button"
-            className={`map-view-toggle-button ${mapViewMode === "satellite" ? "active" : ""}`}
+            className={`map-view-toggle-button ${
+              mapViewMode === "satellite" ? "active" : ""
+            }`}
             onClick={() => setMapViewMode("satellite")}
           >
             Satellite
           </button>
         </div>
-        <MapView mapViewMode={mapViewMode} boundaries={boundaries} selectedLayout={selectedLayout} onLayoutSelect={setSelectedLayout} />
+        <MapView
+          mapViewMode={mapViewMode}
+          boundaries={boundaries}
+          selectedLayout={selectedLayout}
+          onLayoutSelect={setSelectedLayout}
+        />
       </div>
     </div>
   );

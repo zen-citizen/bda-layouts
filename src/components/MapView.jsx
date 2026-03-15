@@ -8,11 +8,16 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Check } from "lucide-react";
 import { layerConfig } from "../lib/utils";
 import "./MapView.css";
 
 const getFeatureName = (props) =>
-  props?.LAYOUT_NAM || props?.["Name of Layout"] || props?.vil_eng || props?.name || "Unknown";
+  props?.LAYOUT_NAM ||
+  props?.["Name of Layout"] ||
+  props?.vil_eng ||
+  props?.name ||
+  "Unknown";
 
 const defaultStyle = {
   color: "#888888",
@@ -38,7 +43,10 @@ function FlyToLayout({ selectedLayout, boundaries }) {
     for (const feature of boundaries.features) {
       const props = feature.properties || {};
       const name = getFeatureName(props);
-      if (name === selectedLayout.name && props.folder === selectedLayout.folder) {
+      if (
+        name === selectedLayout.name &&
+        props.folder === selectedLayout.folder
+      ) {
         const tempLayer = L.geoJSON(feature);
         const featureBounds = tempLayer.getBounds();
         if (featureBounds.isValid()) {
@@ -111,7 +119,13 @@ function MapResizeHandler({ mapExpanded, isResizingRef }) {
   return null;
 }
 
-function MapView({ mapViewMode = "street", mapExpanded = false, boundaries = null, selectedLayout = null, onLayoutSelect = null }) {
+function MapView({
+  mapViewMode = "street",
+  mapExpanded = false,
+  boundaries = null,
+  selectedLayout = null,
+  onLayoutSelect = null
+}) {
   const defaultCenter = [12.9716, 77.5946];
   const defaultZoom = 12;
 
@@ -207,27 +221,29 @@ function MapView({ mapViewMode = "street", mapExpanded = false, boundaries = nul
       />
 
       {/* Render layout boundary outlines from KML */}
-      {visibleBoundaries && visibleBoundaries.features && visibleBoundaries.features.length > 0 && (
-        <GeoJSON
-          key={`layout-boundaries-${[...hiddenFolders].sort().join(",")}`}
-          data={visibleBoundaries}
-          style={getFeatureStyle}
-          onEachFeature={(feature, layer) => {
-            const props = feature.properties || {};
-            const folder = props.folder || "";
-            const name = getFeatureName(props);
-            layer.bindTooltip(
-              `<strong>${name}</strong><br/><em>${folder}</em>`,
-              { sticky: true }
-            );
-            layer.on("click", () => {
-              if (onLayoutSelect) {
-                onLayoutSelect({ name, folder });
-              }
-            });
-          }}
-        />
-      )}
+      {visibleBoundaries &&
+        visibleBoundaries.features &&
+        visibleBoundaries.features.length > 0 && (
+          <GeoJSON
+            key={`layout-boundaries-${[...hiddenFolders].sort().join(",")}`}
+            data={visibleBoundaries}
+            style={getFeatureStyle}
+            onEachFeature={(feature, layer) => {
+              const props = feature.properties || {};
+              const folder = layerConfig[props.folder]?.label || "";
+              const name = getFeatureName(props);
+              layer.bindTooltip(
+                `<strong>${name}</strong><br/><em>${folder}</em>`,
+                { sticky: true }
+              );
+              layer.on("click", () => {
+                if (onLayoutSelect) {
+                  onLayoutSelect({ name, folder });
+                }
+              });
+            }}
+          />
+        )}
 
       <FlyToLayout selectedLayout={selectedLayout} boundaries={boundaries} />
       <MapResizeHandler
@@ -235,22 +251,30 @@ function MapView({ mapViewMode = "street", mapExpanded = false, boundaries = nul
         isResizingRef={isResizingRef}
       />
       <div className="map-legend">
-        {Object.entries(layerConfig).map(([name, style]) => {
-          const hidden = hiddenFolders.has(name);
-          return (
-            <div
-              key={name}
-              className={`map-legend-item ${hidden ? "map-legend-item-hidden" : ""}`}
-              onClick={() => toggleFolder(name)}
-            >
-              <span
-                className="map-legend-swatch"
-                style={{ background: hidden ? "#ccc" : style.color }}
-              />
-              <span>{name}</span>
-            </div>
-          );
-        })}
+        {Object.entries(layerConfig)
+          .sort(([n1, { order: ord1 }], [n2, { order: ord2 }]) =>
+            ord1 < ord2 ? -1 : 1
+          )
+          .map(([name, style]) => {
+            const hidden = hiddenFolders.has(name);
+            return (
+              <div
+                key={name}
+                className={`map-legend-item ${
+                  hidden ? "map-legend-item-hidden" : ""
+                }`}
+                onClick={() => toggleFolder(name)}
+              >
+                <span
+                  className="map-legend-swatch"
+                  style={{ background: hidden ? "#ccc" : style.color }}
+                >
+                  {!hidden && <Check size={10} strokeWidth={3} color="#fff" />}
+                </span>
+                <span>{layerConfig[name]?.label}</span>
+              </div>
+            );
+          })}
       </div>
     </MapContainer>
   );

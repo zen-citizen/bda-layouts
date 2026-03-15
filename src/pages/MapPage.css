@@ -42,7 +42,6 @@
 .sidebar-search {
   position: relative;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #eee;
 }
 
 .sidebar-search-icon {
@@ -65,6 +64,30 @@
 }
 
 .sidebar-search-input:focus {
+  border-color: #4b2840;
+  box-shadow: 0 0 0 2px rgba(75, 40, 64, 0.1);
+}
+
+/* ── Folder filter dropdown ── */
+.sidebar-filter {
+  padding: 0 1rem 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.sidebar-filter-select {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #fff;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.sidebar-filter-select:focus {
   border-color: #4b2840;
   box-shadow: 0 0 0 2px rgba(75, 40, 64, 0.1);
 }
@@ -106,6 +129,7 @@
   color: #333;
   cursor: pointer;
   border-left: 3px solid transparent;
+  text-transform: capitalize;
 }
 
 .sidebar-layout-item:hover {
