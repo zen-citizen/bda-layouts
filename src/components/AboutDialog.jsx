@@ -15,10 +15,19 @@ function AboutDialog({ open, onClose }) {
           under.
         </p>
 
-        <div className="mt-4">
-          <h3 className="font-semibold">Data Source</h3>
-          <p className="text-muted-foreground mt-1">BDA</p>
-        </div>
+         <div className="mt-4">
+           <h3 className="font-semibold">Data Source</h3>
+           <p className="text-muted-foreground mt-1">
+             <a
+               href="https://bdakarnataka.in"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="text-primary underline"
+             >
+               BDA
+             </a>
+           </p>
+         </div>
 
         <div className="mt-4">
           <h3 className="font-semibold">Disclaimer</h3>
@@ -30,10 +39,18 @@ function AboutDialog({ open, onClose }) {
           </p>
         </div>
 
-        <div className="mt-4">
-          <h3 className="font-semibold">Made by Zen Citizen</h3>
-          <p className="text-muted-foreground mt-1">
-            Zen Citizen is a volunteer-led initiative that helps citizens
+         <div className="mt-4">
+           <h3 className="font-semibold">Made by Zen Citizen</h3>
+           <p className="text-muted-foreground mt-1">
+             <a
+               href="https://zencitizen.in"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="text-primary underline"
+             >
+               Zen Citizen
+             </a>{" "}
+             is a volunteer-led initiative that helps citizens
             navigate government bureaucracy in Bangalore. We build practical
             tools and guides to make civic processes more transparent and
             accessible.
