@@ -232,15 +232,15 @@ function MapView({
             style={getFeatureStyle}
             onEachFeature={(feature, layer) => {
               const props = feature.properties || {};
-              const folder = layerConfig[props.folder]?.label || "";
+              const folderLabel = layerConfig[props.folder]?.label || "";
               const name = getFeatureName(props);
               layer.bindTooltip(
-                `<strong>${name}</strong><br/><em>${folder}</em>`,
+                `<strong class="tooltip">${name}</strong><br/><em>${folderLabel}</em>`,
                 { sticky: true }
               );
               layer.on("click", () => {
                 if (onLayoutSelect) {
-                  onLayoutSelect({ name, folder });
+                  onLayoutSelect({ name, folder: props.folder });
                 }
               });
             }}

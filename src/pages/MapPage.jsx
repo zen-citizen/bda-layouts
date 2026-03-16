@@ -106,7 +106,7 @@ function MapPage() {
           rel="noopener noreferrer"
           className="sidebar-footer-link"
         >
-          Volunteer with Zen Citizen
+          Volunteer
         </a>
       </div>
     </div>

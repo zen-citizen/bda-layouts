@@ -19,12 +19,12 @@
     flex: 1;
     min-height: 0;
   }
-  
+
   /* Map pane should fill container - attribution will overlay at bottom */
   .map-container .leaflet-map-pane {
     height: 100% !important;
   }
-  
+
   /* Ensure Leaflet container fills parent */
   .map-container .leaflet-container {
     height: 100% !important;
@@ -103,13 +103,13 @@ body:has(.modal-overlay) .leaflet-tooltip {
 .marker-tooltip strong {
   display: block;
   margin-bottom: 0.5rem;
-  color: #4B2840;
+  color: #4b2840;
   font-size: 1rem;
 }
 
 .tooltip-site-no {
   font-weight: 600;
-  color: #4B2840;
+  color: #4b2840;
   font-size: 0.95rem;
   margin: 0.5rem 0;
 }
@@ -190,12 +190,12 @@ body:has(.modal-overlay) .leaflet-tooltip {
     pointer-events: none !important; /* Allow map interaction, but enable pointer events on controls */
     z-index: 1000 !important;
   }
-  
+
   /* Re-enable pointer events on controls themselves */
   .map-container .leaflet-control-container > * {
     pointer-events: auto !important;
   }
-  
+
   .map-container .leaflet-control-attribution {
     right: 8px !important; /* Position from right edge */
     left: auto !important;
@@ -203,7 +203,9 @@ body:has(.modal-overlay) .leaflet-tooltip {
     margin-left: 0 !important;
     margin-right: 0 !important;
     padding: 6px 10px !important; /* Increased padding for taller box */
-    max-width: calc(100vw - 24px) !important; /* Use viewport width, account for margins */
+    max-width: calc(
+      100vw - 24px
+    ) !important; /* Use viewport width, account for margins */
     width: auto !important;
     font-size: 10px !important;
     white-space: nowrap !important; /* Prevent wrapping to multiple lines */
@@ -214,7 +216,12 @@ body:has(.modal-overlay) .leaflet-tooltip {
     z-index: 10000 !important; /* Very high z-index to ensure it's on top */
     pointer-events: auto !important;
     transform: none !important;
-    background: rgba(255, 255, 255, 0.95) !important; /* Slightly more opaque for better visibility */
+    background: rgba(
+      255,
+      255,
+      255,
+      0.95
+    ) !important; /* Slightly more opaque for better visibility */
     border-radius: 4px !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important; /* Slightly stronger shadow */
     /* Ensure it's positioned within visible bounds */
@@ -225,4 +232,8 @@ body:has(.modal-overlay) .leaflet-tooltip {
     text-align: left !important;
     box-sizing: border-box !important; /* Ensure padding is included in width calculation */
   }
+}
+
+.tooltip {
+  text-transform: capitalize;
 }
