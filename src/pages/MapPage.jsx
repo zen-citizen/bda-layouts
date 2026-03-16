@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, GithubIcon, Code } from "lucide-react";
 import MapView from "../components/MapView";
 import { layerConfig } from "../lib/utils";
 import { parseKML } from "../lib/kmlParser";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "../components/ui/dialog";
 import "./MapPage.css";
 
 function MapPage() {
@@ -13,6 +20,7 @@ function MapPage() {
   const [selectedLayout, setSelectedLayout] = useState(null);
   const [folderFilter, setFolderFilter] = useState("");
   const sidebarListRef = useRef(null);
+  const [disclaimerOpen, setDisclaimerOpen] = useState(false);
 
   // Scroll the active item into view when selectedLayout changes
   useEffect(() => {
@@ -87,7 +95,15 @@ function MapPage() {
 
   const sidebarFooter = (
     <div className="sidebar-footer">
-      <div className="sidebar-footer-source">Data Source: BDA</div>
+      <div className="sidebar-footer-source">
+        <span>Data Source: BDA</span>
+        <button
+          className="sidebar-footer-link"
+          onClick={() => setDisclaimerOpen(true)}
+        >
+          Disclaimer
+        </button>
+      </div>
       <div className="sidebar-footer-links">
         <a href="mailto:info@zencitizen.in" className="sidebar-footer-link">
           Feedback
@@ -255,6 +271,20 @@ function MapPage() {
           onLayoutSelect={setSelectedLayout}
         />
       </div>
+
+      <Dialog open={disclaimerOpen} onOpenChange={setDisclaimerOpen}>
+        <DialogContent onClose={() => setDisclaimerOpen(false)}>
+          <DialogHeader>
+            <DialogTitle>Disclaimer</DialogTitle>
+            <DialogDescription>
+              This page is an independent, citizen-led volunteer effort by Zen
+              Citizen, created with data provided by BDA. Zen Citizen makes no
+              representation or warranty regarding the accuracy or completeness
+              of the information presented.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

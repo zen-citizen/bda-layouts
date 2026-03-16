@@ -6,12 +6,12 @@ const Dialog = ({ open, onOpenChange, children }) => {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 20000 }}>
       <div
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange(false)}
       />
-      <div className="relative z-50 w-full max-w-lg mx-4">
+      <div className="relative w-full max-w-lg mx-4" style={{ zIndex: 20001 }}>
         {children}
       </div>
     </div>
