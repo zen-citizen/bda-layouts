@@ -180,13 +180,22 @@ function MapPage() {
       {/* Mobile collapsed sidebar */}
       <div className="sidebar-mobile-bar">
         <h1 className="sidebar-title">BDA Layouts</h1>
-        <button
-          className="sidebar-menu-button"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Open menu"
-        >
-          <Search size={22} />
-        </button>
+        <div className="flex items-center gap-x-4">
+          <button
+            className="sidebar-menu-button"
+            onClick={() => setAboutOpen(true)}
+            aria-label="More info"
+          >
+            <Info size={22} />
+          </button>
+          <button
+            className="sidebar-menu-button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <Search size={22} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile overlay */}
