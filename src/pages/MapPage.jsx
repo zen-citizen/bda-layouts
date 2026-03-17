@@ -87,28 +87,28 @@ function MapPage() {
     return result;
   }, [layoutsByFolder, searchQuery, folderFilter]);
 
-   const sidebarFooter = (
-     <div className="sidebar-footer flex items-center justify-between">
-       <span>
-         Data Source:{" "}
-         <a
-           href="https://bdakarnataka.in"
-           target="_blank"
-           rel="noopener noreferrer"
-           className="sidebar-footer-link"
-         >
-           BDA
-         </a>
-       </span>
-       <button
-         className="sidebar-footer-link inline-flex items-center gap-1"
-         onClick={() => setAboutOpen(true)}
-       >
-         <Info size={14} />
-         More info
-       </button>
-     </div>
-   );
+  const sidebarFooter = (
+    <div className="sidebar-footer flex items-center justify-between">
+      <span>
+        Data Source:{" "}
+        <a
+          href="https://bdakarnataka.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sidebar-footer-link"
+        >
+          BDA
+        </a>
+      </span>
+      <button
+        className="sidebar-footer-link inline-flex items-center gap-1"
+        onClick={() => setAboutOpen(true)}
+      >
+        <Info size={14} />
+        More info
+      </button>
+    </div>
+  );
 
   const sidebarContent = (
     <>
@@ -120,7 +120,6 @@ function MapPage() {
         <input
           type="text"
           placeholder="Search layouts..."
-          autoFocus
           className="sidebar-search-input"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -198,13 +197,13 @@ function MapPage() {
           >
             <Info size={22} />
           </button>
-          <button
+          {/* <button
             className="sidebar-menu-button"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
           >
             <Search size={22} />
-          </button>
+          </button> */}
         </div>
       </div>
 

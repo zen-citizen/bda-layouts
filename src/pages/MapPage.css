@@ -172,13 +172,14 @@
   .map-area {
     @apply flex-1 min-h-0;
   }
+}
 
-  .mobile-search-fab {
-    @apply fixed bottom-12 right-6 z-[1100] px-4 h-12 rounded-full bg-[#4b2840] text-white flex items-center justify-center gap-2 cursor-pointer border-0;
-    @apply hover:bg-[#3a2033] active:scale-95 transition-transform;
-  }
+.mobile-search-fab {
+  @apply fixed bottom-12 right-6 z-[1100] px-4 h-12 rounded-full bg-[#4b2840] text-white items-center justify-center gap-2 cursor-pointer border-0;
+  @apply hover:bg-[#3a2033] active:scale-95 transition-transform;
+  @apply flex sm:hidden;
+}
 
-  .mobile-search-fab span {
-    @apply text-sm font-medium;
-  }
+.mobile-search-fab span {
+  @apply text-sm font-medium;
 }
