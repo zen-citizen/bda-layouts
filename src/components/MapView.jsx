@@ -33,7 +33,7 @@ const getFeatureStyle = (feature) => {
 };
 
 // Component to fly to a selected layout's bounds
-function FlyToLayout({ selectedLayout, boundaries }) {
+function FlyToLayout({ selectedLayout, boundaries, isMobile }) {
   const map = useMap();
 
   useEffect(() => {
@@ -58,13 +58,15 @@ function FlyToLayout({ selectedLayout, boundaries }) {
     }
 
     if (combinedBounds) {
+      const padding = isMobile ? [50, 50] : [200, 200];
+      const maxZoom = isMobile ? 17 : 16;
       map.flyToBounds(combinedBounds, {
-        padding: [200, 200],
-        maxZoom: 16,
-        duration: 0.8
+        padding,
+        maxZoom,
+        duration: 0.5
       });
     }
-  }, [selectedLayout, boundaries, map]);
+  }, [selectedLayout, boundaries, map, isMobile]);
 
   return null;
 }
@@ -247,7 +249,7 @@ function MapView({
           />
         )}
 
-      <FlyToLayout selectedLayout={selectedLayout} boundaries={boundaries} />
+      <FlyToLayout selectedLayout={selectedLayout} boundaries={boundaries} isMobile={isMobile} />
       <MapResizeHandler
         mapExpanded={mapExpanded}
         isResizingRef={isResizingRef}
