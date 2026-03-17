@@ -255,6 +255,19 @@ function MapPage() {
             Satellite
           </button>
         </div>
+
+        {/* Mobile floating search button - only show when sidebar is closed */}
+        {!menuOpen && (
+          <button
+            className="mobile-search-fab"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open search"
+          >
+            <Search size={22} />
+            <span>Search</span>
+          </button>
+        )}
+
         <MapView
           mapViewMode={mapViewMode}
           boundaries={boundaries}

@@ -162,7 +162,7 @@
   }
 
   .sidebar-overlay-panel {
-    @apply w-full bg-white flex flex-col h-full overflow-hidden shadow-[2px_0_12px_rgba(0,0,0,0.15)];
+    @apply w-screen max-w-full bg-white flex flex-col h-full overflow-hidden shadow-[2px_0_12px_rgba(0,0,0,0.15)];
   }
 
   .sidebar-overlay-close {
@@ -171,5 +171,14 @@
 
   .map-area {
     @apply flex-1 min-h-0;
+  }
+
+  .mobile-search-fab {
+    @apply fixed bottom-12 right-6 z-[1100] px-4 h-12 rounded-full bg-[#4b2840] text-white flex items-center justify-center gap-2 cursor-pointer border-0;
+    @apply hover:bg-[#3a2033] active:scale-95 transition-transform;
+  }
+
+  .mobile-search-fab span {
+    @apply text-sm font-medium;
   }
 }
