@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export const layerConfig = {
-  "BDA Layouts": {
+  Allotted: {
     order: 1,
     label: "BDA Allotted",
     color: "#0F9D58",
@@ -12,7 +12,7 @@ export const layerConfig = {
     fillOpacity: 0.15,
     textColor: "#fff"
   },
-  "Illegal Layouts": {
+  Unauthorized: {
     order: 3,
     label: "Unauthorized",
     color: "#E65100",
@@ -22,7 +22,7 @@ export const layerConfig = {
     fillOpacity: 0.15,
     textColor: "#fff"
   },
-  "Approved Layouts": {
+  Approved: {
     order: 2,
     label: "BDA Approved",
     color: "#FFEA00",

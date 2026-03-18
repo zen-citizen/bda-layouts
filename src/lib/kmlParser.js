@@ -82,7 +82,7 @@ export function parseKML(kmlText) {
       if (p.LAYOUT_NAM) p.LAYOUT_NAM = formatName(p.LAYOUT_NAM);
       if (p["Name of Layout"])
         p["Name of Layout"] = formatName(p["Name of Layout"]);
-      if (p.vil_eng) p.vil_eng = formatName(p.vil_eng);
+      // if (p.vil_eng) p.vil_eng = formatName(p.vil_eng);
       if (p.name) p.name = formatName(p.name);
       allFeatures.push(feature);
     }

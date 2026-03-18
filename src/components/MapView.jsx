@@ -121,6 +121,20 @@ function MapResizeHandler({ mapExpanded, isResizingRef }) {
   return null;
 }
 
+const showHobliAndTalukConditionaly = (feature) => {
+  let html = "";
+  if (feature.properties.Taluk) {
+    html += `<br /><span>Taluk:&nbsp;</span><span>${feature.properties.Taluk}</span>`;
+  }
+  if (feature.properties.Hobli) {
+    html += `<br /><span>Hobli:&nbsp;</span><span>${feature.properties.Hobli}</span>`;
+  }
+  if (feature.properties.Village) {
+    html += `<br /><span>Village:&nbsp;</span><span>${feature.properties.Village}</span>`;
+  }
+  return html;
+};
+
 function MapView({
   mapViewMode = "street",
   mapExpanded = false,
@@ -235,9 +249,15 @@ function MapView({
             onEachFeature={(feature, layer) => {
               const props = feature.properties || {};
               const folderLabel = layerConfig[props.folder]?.label || "";
+              console.log({ props });
               const name = getFeatureName(props);
               layer.bindTooltip(
-                `<strong class="tooltip">${name}</strong><br/><em>${folderLabel}</em>`,
+                `
+                  <strong class="tooltip">${name}</strong>
+                  <br/>
+                  <em>${folderLabel}</em>
+                  ${showHobliAndTalukConditionaly(feature)}
+                `,
                 { sticky: true }
               );
               layer.on("click", () => {
@@ -249,7 +269,11 @@ function MapView({
           />
         )}
 
-      <FlyToLayout selectedLayout={selectedLayout} boundaries={boundaries} isMobile={isMobile} />
+      <FlyToLayout
+        selectedLayout={selectedLayout}
+        boundaries={boundaries}
+        isMobile={isMobile}
+      />
       <MapResizeHandler
         mapExpanded={mapExpanded}
         isResizingRef={isResizingRef}

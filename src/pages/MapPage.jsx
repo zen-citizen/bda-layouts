@@ -31,15 +31,32 @@ function MapPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await fetch("/blr-layouts.kml");
-        if (!response.ok) return;
-        const kmlText = await response.text();
-        const geoJson = parseKML(kmlText);
+        const [allottedRes, approvedRes, unauthRes] = await Promise.allSettled([
+          fetch("/allotted-layouts.kml"),
+          fetch("/approved-layouts.kml"),
+          fetch("/unauthorized-layouts.kml")
+        ]);
+        const combined = await Promise.all([
+          allottedRes?.value?.text(),
+          approvedRes?.value?.text(),
+          unauthRes?.value?.text()
+        ]);
+        const geoJson = combined.reduce(
+          (acc, curr) => {
+            const { features } = parseKML(curr);
+            return { ...acc, features: acc.features.concat(features) };
+          },
+          { type: "FeatureCollection", features: [] }
+        );
         if (geoJson?.features?.length > 0) {
           setBoundaries(geoJson);
         }
-      } catch {
-        // silently fail
+        console.log(geoJson);
+      } catch (e) {
+        console.log(
+          "Error when reading/parsing/transforming KML to GeoJSON",
+          e
+        );
       }
     };
     load();
@@ -54,15 +71,18 @@ function MapPage() {
       const name =
         feature.properties?.LAYOUT_NAM ||
         feature.properties?.["Name of Layout"] ||
-        feature.properties?.vil_eng ||
         feature.properties?.name ||
         null;
       if (!name) continue;
       if (!grouped[folder]) grouped[folder] = new Set();
       grouped[folder].add(name);
     }
+    const unauth = boundaries.features.filter(
+      (f) => f.properties.folder === "Unauthorized"
+    );
+    grouped["Unauthorized"] = unauth.map((layout, idx) => `Layout-${idx + 1}`);
     // Convert sets to sorted arrays in display order
-    const folderOrder = ["BDA Layouts", "Approved Layouts", "Illegal Layouts"];
+    const folderOrder = ["Allotted", "Approved", "Unauthorized"];
     const result = {};
     for (const folder of folderOrder) {
       if (grouped[folder]) {
