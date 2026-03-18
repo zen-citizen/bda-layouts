@@ -6,6 +6,12 @@ import { parseKML } from "../lib/kmlParser";
 import AboutDialog from "../components/AboutDialog";
 import "./MapPage.css";
 
+const padLeft = (str, int = 4) => {
+  let pad = int - (str?.length || 0);
+  pad = pad > 0 ? Array(pad).fill("0").join("") : "";
+  return `${pad}${str}`;
+};
+
 function MapPage() {
   const [mapViewMode, setMapViewMode] = useState("street");
   const [boundaries, setBoundaries] = useState(null);
@@ -44,7 +50,22 @@ function MapPage() {
         const geoJson = combined.reduce(
           (acc, curr) => {
             const { features } = parseKML(curr);
-            return { ...acc, features: acc.features.concat(features) };
+            let isUnauthFolder =
+              features?.[0]?.properties?.folder === "Unauthorized";
+            return {
+              ...acc,
+              features: acc.features.concat(
+                !isUnauthFolder
+                  ? features
+                  : features.map((f, i) => ({
+                      ...f,
+                      properties: {
+                        ...f.properties,
+                        name: `Layout-${padLeft(`${i + 1}`)}`
+                      }
+                    }))
+              )
+            };
           },
           { type: "FeatureCollection", features: [] }
         );
@@ -77,10 +98,6 @@ function MapPage() {
       if (!grouped[folder]) grouped[folder] = new Set();
       grouped[folder].add(name);
     }
-    const unauth = boundaries.features.filter(
-      (f) => f.properties.folder === "Unauthorized"
-    );
-    grouped["Unauthorized"] = unauth.map((layout, idx) => `Layout-${idx + 1}`);
     // Convert sets to sorted arrays in display order
     const folderOrder = ["Allotted", "Approved", "Unauthorized"];
     const result = {};
