@@ -37,15 +37,15 @@ function MapPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [allottedRes, approvedRes, unauthRes] = await Promise.allSettled([
+        const [allottedRes, approvedRes] = await Promise.allSettled([
           fetch("/allotted-layouts.kml"),
-          fetch("/approved-layouts.kml"),
-          fetch("/unauthorized-layouts.kml")
+          fetch("/approved-layouts.kml")
+          // fetch("/unauthorized-layouts.kml")
         ]);
         const combined = await Promise.all([
           allottedRes?.value?.text(),
-          approvedRes?.value?.text(),
-          unauthRes?.value?.text()
+          approvedRes?.value?.text()
+          // unauthRes?.value?.text()
         ]);
         const geoJson = combined.reduce(
           (acc, curr) => {
@@ -99,7 +99,8 @@ function MapPage() {
       grouped[folder].add(name);
     }
     // Convert sets to sorted arrays in display order
-    const folderOrder = ["Allotted", "Approved", "Unauthorized"];
+    // const folderOrder = ["Allotted", "Approved", "Unauthorized"];
+    const folderOrder = ["Allotted", "Approved"];
     const result = {};
     for (const folder of folderOrder) {
       if (grouped[folder]) {
@@ -170,6 +171,7 @@ function MapPage() {
         >
           <option value="">All Layouts</option>
           {Object.entries(layerConfig)
+            .filter((a) => a[0] !== "Unauthorized")
             .sort(([, a], [, b]) => a.order - b.order)
             .map(([key, cfg]) => (
               <option key={key} value={key}>

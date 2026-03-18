@@ -280,6 +280,7 @@ function MapView({
       />
       <div className="map-legend">
         {Object.entries(layerConfig)
+          .filter((a) => a[0] !== "Unauthorized")
           .sort(([n1, { order: ord1 }], [n2, { order: ord2 }]) =>
             ord1 < ord2 ? -1 : 1
           )
