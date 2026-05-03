@@ -1,8 +1,25 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export const folders = {
+  "BDA Approved": "BDA Approved",
+  "GBA Approved": "GBA Approved",
+  "BDA Allotted": "BDA Allotted",
+  "GBA Allotted": "GBA Allotted"
+};
+
 export const layerConfig = {
-  Allotted: {
+  [folders["GBA Allotted"]]: {
+    order: 1,
+    label: "GBA Allotted",
+    color: "#166534",
+    weight: 2,
+    opacity: 0.8,
+    fillColor: "#166534",
+    fillOpacity: 0.15,
+    textColor: "#fff"
+  },
+  [folders["BDA Allotted"]]: {
     order: 1,
     label: "BDA Allotted",
     color: "#0F9D58",
@@ -11,6 +28,26 @@ export const layerConfig = {
     fillColor: "#0F9D58",
     fillOpacity: 0.15,
     textColor: "#fff"
+  },
+  [folders["GBA Approved"]]: {
+    order: 2,
+    label: "GBA Approved",
+    color: "#d97706",
+    weight: 2,
+    opacity: 0.8,
+    fillColor: "#d97706",
+    fillOpacity: 0.15,
+    textColor: "#000"
+  },
+  [folders["BDA Approved"]]: {
+    order: 2,
+    label: "BDA Approved",
+    color: "#FFEA00",
+    weight: 2,
+    opacity: 0.8,
+    fillColor: "#FFEA00",
+    fillOpacity: 0.15,
+    textColor: "#000"
   },
   Unauthorized: {
     order: 3,
@@ -21,16 +58,6 @@ export const layerConfig = {
     fillColor: "#E65100",
     fillOpacity: 0.15,
     textColor: "#fff"
-  },
-  Approved: {
-    order: 2,
-    label: "BDA Approved",
-    color: "#FFEA00",
-    weight: 2,
-    opacity: 0.8,
-    fillColor: "#FFEA00",
-    fillOpacity: 0.15,
-    textColor: "#000"
   }
 };
 
@@ -168,7 +195,6 @@ export function normalizeLayoutName(layout) {
   // But preserve acronyms (all caps words like "BSK", "BDA") and content in parentheses
   const parts = [];
   let current = "";
-  let inParens = false;
 
   for (let i = 0; i < base.length; i++) {
     const char = base[i];
@@ -177,13 +203,11 @@ export function normalizeLayoutName(layout) {
         parts.push(current.trim());
         current = "";
       }
-      inParens = true;
       current += char;
     } else if (char === ")") {
       current += char;
       parts.push(current.trim());
       current = "";
-      inParens = false;
     } else {
       current += char;
     }

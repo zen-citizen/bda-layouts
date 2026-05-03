@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Menu, X, Search, Info } from "lucide-react";
+import { X, Search, Info } from "lucide-react";
 import MapView from "../components/MapView";
 import { layerConfig } from "../lib/utils";
 import { parseKML } from "../lib/kmlParser";
@@ -11,6 +11,13 @@ const padLeft = (str, int = 4) => {
   pad = pad > 0 ? Array(pad).fill("0").join("") : "";
   return `${pad}${str}`;
 };
+
+const folderNames = [
+  "BDA Approved",
+  "GBA Approved",
+  "BDA Allotted",
+  "GBA Allotted"
+];
 
 function MapPage() {
   const [mapViewMode, setMapViewMode] = useState("street");
@@ -37,18 +44,28 @@ function MapPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [allottedRes, approvedRes] = await Promise.allSettled([
-          fetch("/allotted-layouts.kml"),
-          fetch("/approved-layouts.kml")
-          // fetch("/unauthorized-layouts.kml")
-        ]);
+        const [bdaApproved, gbaApproved, bdaAllotted, gbaAllotted] =
+          await Promise.allSettled([
+            fetch("/Approved_layouts_BDA.kml"),
+            fetch("/Approved_layouts_GBA.kml"),
+            fetch("/Allotted_BDA.kml"),
+            fetch("/Allotted_handed_GBA.kml")
+          ]);
+        // const [allottedRes, approvedRes] = await Promise.allSettled([
+        //   fetch("/allotted-layouts.kml"),
+        //   fetch("/approved-layouts.kml")
+        //   // fetch("/unauthorized-layouts.kml")
+        // ]);
+
         const combined = await Promise.all([
-          allottedRes?.value?.text(),
-          approvedRes?.value?.text()
+          bdaApproved?.value?.text(),
+          gbaApproved?.value?.text(),
+          bdaAllotted?.value?.text(),
+          gbaAllotted?.value?.text()
           // unauthRes?.value?.text()
         ]);
         const geoJson = combined.reduce(
-          (acc, curr) => {
+          (acc, curr, idx) => {
             const { features } = parseKML(curr);
             let isUnauthFolder =
               features?.[0]?.properties?.folder === "Unauthorized";
@@ -56,11 +73,18 @@ function MapPage() {
               ...acc,
               features: acc.features.concat(
                 !isUnauthFolder
-                  ? features
+                  ? features.map((f) => ({
+                      ...f,
+                      properties: {
+                        ...f.properties,
+                        folder: folderNames[idx]
+                      }
+                    }))
                   : features.map((f, i) => ({
                       ...f,
                       properties: {
                         ...f.properties,
+                        folder: folderNames[idx],
                         name: `Layout-${padLeft(`${i + 1}`)}`
                       }
                     }))
@@ -70,9 +94,8 @@ function MapPage() {
           { type: "FeatureCollection", features: [] }
         );
         if (geoJson?.features?.length > 0) {
-          setBoundaries(geoJson);
+          setBoundaries(geoJson || {});
         }
-        console.log(geoJson);
       } catch (e) {
         console.log(
           "Error when reading/parsing/transforming KML to GeoJSON",
@@ -85,8 +108,8 @@ function MapPage() {
 
   // Extract unique layout names grouped by folder
   const layoutsByFolder = useMemo(() => {
-    if (!boundaries) return {};
     const grouped = {};
+    if (!boundaries || !boundaries.features) return grouped;
     for (const feature of boundaries.features) {
       const folder = feature.properties?.folder || "Other";
       const name =
@@ -100,9 +123,8 @@ function MapPage() {
     }
     // Convert sets to sorted arrays in display order
     // const folderOrder = ["Allotted", "Approved", "Unauthorized"];
-    const folderOrder = ["Allotted", "Approved"];
     const result = {};
-    for (const folder of folderOrder) {
+    for (const folder of folderNames) {
       if (grouped[folder]) {
         result[folder] = Array.from(grouped[folder]).sort();
       }

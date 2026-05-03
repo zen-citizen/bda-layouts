@@ -249,7 +249,6 @@ function MapView({
             onEachFeature={(feature, layer) => {
               const props = feature.properties || {};
               const folderLabel = layerConfig[props.folder]?.label || "";
-              console.log({ props });
               const name = getFeatureName(props);
               layer.bindTooltip(
                 `
