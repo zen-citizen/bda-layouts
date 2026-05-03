@@ -16,7 +16,8 @@ const folderNames = [
   "BDA Approved",
   "GBA Approved",
   "BDA Allotted",
-  "GBA Allotted"
+  "GBA Allotted",
+  "BDA Boundary"
 ];
 
 function MapPage() {
@@ -32,6 +33,8 @@ function MapPage() {
   // Scroll the active item into view when selectedLayout changes
   useEffect(() => {
     if (!selectedLayout || !sidebarListRef.current) return;
+    setFolderFilter("");
+    setSearchQuery("");
     const active = sidebarListRef.current.querySelector(
       ".sidebar-layout-item.active"
     );
@@ -44,13 +47,19 @@ function MapPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [bdaApproved, gbaApproved, bdaAllotted, gbaAllotted] =
-          await Promise.allSettled([
-            fetch("/Approved_layouts_BDA.kml"),
-            fetch("/Approved_layouts_GBA.kml"),
-            fetch("/Allotted_BDA.kml"),
-            fetch("/Allotted_handed_GBA.kml")
-          ]);
+        const [
+          bdaApproved,
+          gbaApproved,
+          bdaAllotted,
+          gbaAllotted,
+          bdaBoundary
+        ] = await Promise.allSettled([
+          fetch("/Approved_layouts_BDA.kml"),
+          fetch("/Approved_layouts_GBA.kml"),
+          fetch("/Allotted_BDA.kml"),
+          fetch("/Allotted_handed_GBA.kml"),
+          fetch("/BDA_Boundary.kml")
+        ]);
         // const [allottedRes, approvedRes] = await Promise.allSettled([
         //   fetch("/allotted-layouts.kml"),
         //   fetch("/approved-layouts.kml")
@@ -61,12 +70,14 @@ function MapPage() {
           bdaApproved?.value?.text(),
           gbaApproved?.value?.text(),
           bdaAllotted?.value?.text(),
-          gbaAllotted?.value?.text()
+          gbaAllotted?.value?.text(),
+          bdaBoundary?.value?.text()
           // unauthRes?.value?.text()
         ]);
         const geoJson = combined.reduce(
           (acc, curr, idx) => {
             const { features } = parseKML(curr);
+            console.log({ features });
             let isUnauthFolder =
               features?.[0]?.properties?.folder === "Unauthorized";
             return {
@@ -122,7 +133,6 @@ function MapPage() {
       grouped[folder].add(name);
     }
     // Convert sets to sorted arrays in display order
-    // const folderOrder = ["Allotted", "Approved", "Unauthorized"];
     const result = {};
     for (const folder of folderNames) {
       if (grouped[folder]) {
@@ -204,38 +214,60 @@ function MapPage() {
       </div>
       <div className="sidebar-list" ref={sidebarListRef}>
         {Object.keys(filteredLayoutsByFolder).length === 0 ? (
-          <div className="sidebar-no-results">No layout/region found.</div>
+          <div className="sidebar-no-results">
+            No layout/region found
+            {folderFilter ? ` in ${folderFilter}` : ``}.
+            {folderFilter ? (
+              <>
+                <br />
+                <span>
+                  <a
+                    className="text-blue-400 cursor-pointer"
+                    onClick={() => setFolderFilter("")}
+                  >
+                    Search in all layouts?
+                  </a>
+                </span>
+              </>
+            ) : null}
+          </div>
         ) : (
-          Object.entries(filteredLayoutsByFolder).map(([folder, names]) => (
-            <div key={folder} className="sidebar-folder">
-              <div
-                className="sidebar-folder-header"
-                style={{
-                  color: layerConfig[folder]?.textColor,
-                  backgroundColor: layerConfig[folder]?.color
-                }}
-              >
-                {layerConfig[folder]?.label}
-              </div>
-              {names.map((name) => (
+          Object.entries(filteredLayoutsByFolder)
+            .sort(([f1], [f2]) => {
+              const order1 = layerConfig[f1]?.order;
+              const order2 = layerConfig[f2]?.order;
+              return order1 > order2 ? 1 : -1;
+            })
+            .map(([folder, names]) => (
+              <div key={folder} className="sidebar-folder">
                 <div
-                  key={name}
-                  className={`sidebar-layout-item ${
-                    selectedLayout?.name === name &&
-                    selectedLayout?.folder === folder
-                      ? "active"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedLayout({ name, folder });
-                    setMenuOpen(false);
+                  className="sidebar-folder-header"
+                  style={{
+                    color: layerConfig[folder]?.textColor,
+                    backgroundColor: layerConfig[folder]?.color
                   }}
                 >
-                  {name}
+                  {layerConfig[folder]?.label}
                 </div>
-              ))}
-            </div>
-          ))
+                {names.map((name) => (
+                  <div
+                    key={name}
+                    className={`sidebar-layout-item ${
+                      selectedLayout?.name === name &&
+                      selectedLayout?.folder === folder
+                        ? "active"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedLayout({ name, folder });
+                      setMenuOpen(false);
+                    }}
+                  >
+                    {name}
+                  </div>
+                ))}
+              </div>
+            ))
         )}
       </div>
       {sidebarFooter}

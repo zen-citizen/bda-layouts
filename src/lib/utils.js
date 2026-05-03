@@ -5,17 +5,18 @@ export const folders = {
   "BDA Approved": "BDA Approved",
   "GBA Approved": "GBA Approved",
   "BDA Allotted": "BDA Allotted",
-  "GBA Allotted": "GBA Allotted"
+  "GBA Allotted": "GBA Allotted",
+  "BDA Boundary": "BDA Boundary"
 };
 
 export const layerConfig = {
   [folders["GBA Allotted"]]: {
-    order: 1,
+    order: 2,
     label: "GBA Allotted",
-    color: "#166534",
+    color: "oklch(72.3% 0.219 149.579)",
     weight: 2,
     opacity: 0.8,
-    fillColor: "#166534",
+    fillColor: "oklch(72.3% 0.219 149.579)",
     fillOpacity: 0.15,
     textColor: "#fff"
   },
@@ -30,7 +31,7 @@ export const layerConfig = {
     textColor: "#fff"
   },
   [folders["GBA Approved"]]: {
-    order: 2,
+    order: 4,
     label: "GBA Approved",
     color: "#d97706",
     weight: 2,
@@ -40,17 +41,27 @@ export const layerConfig = {
     textColor: "#000"
   },
   [folders["BDA Approved"]]: {
-    order: 2,
+    order: 3,
     label: "BDA Approved",
-    color: "#FFEA00",
+    color: "oklch(75% 0.183 55.934)",
     weight: 2,
     opacity: 0.8,
-    fillColor: "#FFEA00",
+    fillColor: "oklch(75% 0.183 55.934)",
+    fillOpacity: 0.15,
+    textColor: "#000"
+  },
+  [folders["BDA Boundary"]]: {
+    order: 1,
+    label: "BDA boundary",
+    color: "#94a3b8",
+    weight: 2,
+    opacity: 0.8,
+    fillColor: "#94a3b8",
     fillOpacity: 0.15,
     textColor: "#000"
   },
   Unauthorized: {
-    order: 3,
+    order: 6,
     label: "Unauthorized",
     color: "#E65100",
     weight: 2,

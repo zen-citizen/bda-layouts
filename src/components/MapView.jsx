@@ -9,7 +9,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Check } from "lucide-react";
-import { layerConfig } from "../lib/utils";
+import { folders, layerConfig } from "../lib/utils";
 import "./MapView.css";
 
 const getFeatureName = (props) =>
@@ -27,9 +27,28 @@ const defaultStyle = {
   fillOpacity: 0.1
 };
 
-const getFeatureStyle = (feature) => {
+const getFeatureStyle = (feature, selectedLayout) => {
   const folder = feature.properties?.folder;
-  return layerConfig[folder] || defaultStyle;
+  const style = layerConfig[folder] || defaultStyle;
+
+  if (selectedLayout) {
+    const props = feature.properties || {};
+    const name = getFeatureName(props);
+    if (
+      name === selectedLayout.name &&
+      props.folder === selectedLayout.folder
+    ) {
+      return {
+        color: "#000000",
+        weight: 3,
+        opacity: 1,
+        fillColor: style.color,
+        fillOpacity: style.fillOpacity
+      };
+    }
+  }
+
+  return style;
 };
 
 // Component to fly to a selected layout's bounds
@@ -121,7 +140,7 @@ function MapResizeHandler({ mapExpanded, isResizingRef }) {
   return null;
 }
 
-const showHobliAndTalukConditionaly = (feature) => {
+const showMetadataConditionally = (feature) => {
   let html = "";
   if (feature.properties.Taluk) {
     html += `<br /><span>Taluk:&nbsp;</span><span>${feature.properties.Taluk}</span>`;
@@ -154,7 +173,7 @@ function MapView({
   const mapRef = useRef(null);
 
   const [isMobile, setIsMobile] = useState(false);
-  const [hiddenFolders, setHiddenFolders] = useState(new Set());
+  const [hiddenFolders, setHiddenFolders] = useState(new Set(["BDA Boundary"]));
 
   const toggleFolder = (folder) => {
     setHiddenFolders((prev) => {
@@ -168,15 +187,33 @@ function MapView({
     });
   };
 
-  const visibleBoundaries = useMemo(() => {
-    if (!boundaries || hiddenFolders.size === 0) return boundaries;
-    return {
-      ...boundaries,
-      features: boundaries.features.filter(
-        (f) => !hiddenFolders.has(f.properties?.folder)
-      )
-    };
+  const NON_INTERACTIVE_FOLDERS = new Set(["BDA Boundary"]);
+
+  const boundariesByFolder = useMemo(() => {
+    if (!boundaries || !boundaries.features) return {};
+
+    const grouped = {};
+    for (const feature of boundaries.features) {
+      const folder = feature.properties?.folder;
+      if (!folder) continue;
+      
+      if (hiddenFolders.has(folder)) continue;
+
+      if (!grouped[folder]) {
+        grouped[folder] = { type: "FeatureCollection", features: [] };
+      }
+      grouped[folder].features.push(feature);
+    }
+    return grouped;
   }, [boundaries, hiddenFolders]);
+
+  const sortedFolders = useMemo(() => {
+    return Object.keys(boundariesByFolder).sort((a, b) => {
+      const orderA = layerConfig[a]?.order ?? 999;
+      const orderB = layerConfig[b]?.order ?? 999;
+      return orderA - orderB;
+    });
+  }, [boundariesByFolder]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -186,6 +223,16 @@ function MapView({
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (selectedLayout?.folder) {
+      setHiddenFolders((prev) => {
+        const next = new Set(prev);
+        next.delete(selectedLayout.folder);
+        return next;
+      });
+    }
+  }, [selectedLayout]);
 
   const tileConfig = useMemo(() => {
     if (mapViewMode === "satellite") {
@@ -238,15 +285,18 @@ function MapView({
         errorTileUrl="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
       />
 
-      {/* Render layout boundary outlines from KML */}
-      {visibleBoundaries &&
-        visibleBoundaries.features &&
-        visibleBoundaries.features.length > 0 && (
+      {/* Render layout boundary outlines from KML grouped by folder */}
+      {sortedFolders.map((folder) => {
+        const isNonInteractive = NON_INTERACTIVE_FOLDERS.has(folder);
+        return (
           <GeoJSON
-            key={`layout-boundaries-${[...hiddenFolders].sort().join(",")}`}
-            data={visibleBoundaries}
-            style={getFeatureStyle}
+            key={`layout-boundaries-${folder}`}
+            data={boundariesByFolder[folder]}
+            style={(feature) => getFeatureStyle(feature, selectedLayout)}
+            interactive={!isNonInteractive}
             onEachFeature={(feature, layer) => {
+              if (isNonInteractive) return;
+              
               const props = feature.properties || {};
               const folderLabel = layerConfig[props.folder]?.label || "";
               const name = getFeatureName(props);
@@ -255,7 +305,7 @@ function MapView({
                   <strong class="tooltip">${name}</strong>
                   <br/>
                   <em>${folderLabel}</em>
-                  ${showHobliAndTalukConditionaly(feature)}
+                  ${showMetadataConditionally(feature)}
                 `,
                 { sticky: true }
               );
@@ -266,7 +316,8 @@ function MapView({
               });
             }}
           />
-        )}
+        );
+      })}
 
       <FlyToLayout
         selectedLayout={selectedLayout}
@@ -305,7 +356,11 @@ function MapView({
                     />
                   )}
                 </span>
-                <span>{layerConfig[name]?.label}</span>
+                <span>
+                  {name === "BDA Boundary"
+                    ? "Show BDA boundary"
+                    : layerConfig[name]?.label}
+                </span>
               </div>
             );
           })}
