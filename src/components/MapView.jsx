@@ -196,7 +196,7 @@ function MapView({
     for (const feature of boundaries.features) {
       const folder = feature.properties?.folder;
       if (!folder) continue;
-      
+
       if (hiddenFolders.has(folder)) continue;
 
       if (!grouped[folder]) {
@@ -296,7 +296,7 @@ function MapView({
             interactive={!isNonInteractive}
             onEachFeature={(feature, layer) => {
               if (isNonInteractive) return;
-              
+
               const props = feature.properties || {};
               const folderLabel = layerConfig[props.folder]?.label || "";
               const name = getFeatureName(props);
@@ -330,10 +330,42 @@ function MapView({
       />
       <div className="map-legend">
         {Object.entries(layerConfig)
-          .filter((a) => a[0] !== "Unauthorized")
+          .filter((a) => !["Unauthorized", "BDA Boundary"].includes(a[0]))
           .sort(([n1, { order: ord1 }], [n2, { order: ord2 }]) =>
             ord1 < ord2 ? -1 : 1
           )
+          .map(([name, style]) => {
+            const hidden = hiddenFolders.has(name);
+            return (
+              <div
+                key={name}
+                className={`map-legend-item ${
+                  hidden ? "map-legend-item-hidden" : ""
+                }`}
+                onClick={() => toggleFolder(name)}
+              >
+                <span
+                  className="map-legend-swatch"
+                  style={{ background: hidden ? "#ccc" : style.color }}
+                >
+                  {!hidden && (
+                    <Check
+                      size={10}
+                      strokeWidth={3}
+                      color={layerConfig[name]?.textColor}
+                    />
+                  )}
+                </span>
+                <span>
+                  {name === "BDA Boundary"
+                    ? "Show BDA boundary"
+                    : layerConfig[name]?.label}
+                </span>
+              </div>
+            );
+          })}
+        {Object.entries(layerConfig)
+          .filter((a) => ["BDA Boundary"].includes(a[0]))
           .map(([name, style]) => {
             const hidden = hiddenFolders.has(name);
             return (

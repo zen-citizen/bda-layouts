@@ -203,7 +203,7 @@ function MapPage() {
         >
           <option value="">All Layouts</option>
           {Object.entries(layerConfig)
-            .filter((a) => a[0] !== "Unauthorized")
+            .filter((a) => !["BDA Boundary", "Unauthorized"].includes(a[0]))
             .sort(([, a], [, b]) => a.order - b.order)
             .map(([key, cfg]) => (
               <option key={key} value={key}>
