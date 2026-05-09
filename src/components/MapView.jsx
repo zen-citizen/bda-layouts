@@ -168,7 +168,7 @@ const RenderLabelValue = ({ label = "", value = "" }) => {
   return (
     <div>
       <span className="font-semibold">{label}:</span>&nbsp;
-      <span className="break-all">{value}</span>
+      <span className="break-word">{value}</span>
     </div>
   );
 };
@@ -368,7 +368,7 @@ function MapView({
                 resetMapKey.current = Math.random();
               }}
             />
-            <div className="font-semibold uppercase max-w-[90%] break-all">
+            <div className="font-semibold uppercase max-w-[90%] break-word">
               {selectedLayoutFull?.properties?.["Name of Layout"]}
             </div>
             <div className="mt-3 flex flex-col gap-y-2">
@@ -393,13 +393,17 @@ function MapView({
               {selectedLayoutFull?.properties?.Hobli && (
                 <RenderLabelValue
                   label="Hobli"
-                  value={selectedLayoutFull.properties?.Hobli}
+                  value={selectedLayoutFull.properties?.Hobli?.split(",")?.join(
+                    ", "
+                  )}
                 />
               )}
               {selectedLayoutFull?.properties?.Village && (
                 <RenderLabelValue
                   label="Village"
-                  value={selectedLayoutFull.properties?.Village}
+                  value={selectedLayoutFull.properties?.Village?.split(
+                    ","
+                  )?.join(", ")}
                 />
               )}
             </div>
