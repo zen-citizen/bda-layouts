@@ -8,16 +8,12 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { folders, layerConfig } from "../lib/utils";
 import "./MapView.css";
 
 const getFeatureName = (props) =>
-  props?.LAYOUT_NAM ||
-  props?.["Name of Layout"] ||
-  props?.vil_eng ||
-  props?.name ||
-  "Unknown";
+  props?.["Name of Layout"] || props?.name || "Unknown";
 
 const defaultStyle = {
   color: "#888888",
@@ -142,16 +138,39 @@ function MapResizeHandler({ mapExpanded, isResizingRef }) {
 
 const showMetadataConditionally = (feature) => {
   let html = "";
+  if (feature.properties.Division) {
+    html += `<br /><span>Division:&nbsp;</span><span>${feature.properties.Division}</span>`;
+  }
   if (feature.properties.Taluk) {
     html += `<br /><span>Taluk:&nbsp;</span><span>${feature.properties.Taluk}</span>`;
   }
   if (feature.properties.Hobli) {
-    html += `<br /><span>Hobli:&nbsp;</span><span>${feature.properties.Hobli}</span>`;
+    let hoblis = feature.properties.Hobli.split(",");
+    let subset = hoblis?.slice(0, 2);
+    let more = hoblis.length - subset.length;
+    html += `<br /><span>Hobli:&nbsp;</span><span>${subset.join(", ")}${
+      more > 0 ? ` + ${more} more` : ``
+    }</span>`;
   }
   if (feature.properties.Village) {
-    html += `<br /><span>Village:&nbsp;</span><span>${feature.properties.Village}</span>`;
+    let villages = feature.properties.Village.split(",");
+    let subset = villages?.slice(0, 2);
+    let more = villages.length - subset.length;
+    html += `<br /><span>Village:&nbsp;</span><span>${subset.join(", ")}${
+      more > 0 ? ` + ${more} more` : ``
+    }</span>`;
   }
+
   return html;
+};
+
+const RenderLabelValue = ({ label = "", value = "" }) => {
+  return (
+    <div>
+      <span className="font-semibold">{label}:</span>&nbsp;
+      <span className="break-all">{value}</span>
+    </div>
+  );
 };
 
 function MapView({
@@ -261,8 +280,18 @@ function MapView({
     };
   }, [mapViewMode, isMobile]);
 
+  const selectedLayoutFull = useMemo(() => {
+    if (!selectedLayout || !boundaries) return null;
+    return boundaries?.features?.find((feat) => {
+      return feat?.properties?.["Name of Layout"] == selectedLayout?.name;
+    });
+  }, [selectedLayout, boundaries]);
+
+  const resetMapKey = useRef(0);
+
   return (
     <MapContainer
+      key={resetMapKey.current}
       center={defaultCenter}
       zoom={defaultZoom}
       maxBounds={maxBounds}
@@ -319,6 +348,133 @@ function MapView({
         );
       })}
 
+      <div className="map-info-container">
+        {!!selectedLayoutFull && (
+          <div
+            className="selected-layout-info"
+            style={{
+              border: `1px solid ${
+                layerConfig?.[selectedLayoutFull?.properties?.folder]?.color ||
+                "#ddd"
+              }`
+            }}
+          >
+            <X
+              size="24"
+              className="close"
+              title="Close selected layout"
+              onClick={() => {
+                onLayoutSelect(null);
+                resetMapKey.current = Math.random();
+              }}
+            />
+            <div className="font-semibold uppercase max-w-[90%] break-all">
+              {selectedLayoutFull?.properties?.["Name of Layout"]}
+            </div>
+            <div className="mt-3 flex flex-col gap-y-2">
+              {selectedLayoutFull?.properties?.folder && (
+                <RenderLabelValue
+                  label="Type"
+                  value={selectedLayoutFull.properties?.folder}
+                />
+              )}
+              {selectedLayoutFull?.properties?.Division && (
+                <RenderLabelValue
+                  label="Division"
+                  value={selectedLayoutFull.properties?.Division}
+                />
+              )}
+              {selectedLayoutFull?.properties?.Taluk && (
+                <RenderLabelValue
+                  label="Taluk"
+                  value={selectedLayoutFull.properties?.Taluk}
+                />
+              )}
+              {selectedLayoutFull?.properties?.Hobli && (
+                <RenderLabelValue
+                  label="Hobli"
+                  value={selectedLayoutFull.properties?.Hobli}
+                />
+              )}
+              {selectedLayoutFull?.properties?.Village && (
+                <RenderLabelValue
+                  label="Village"
+                  value={selectedLayoutFull.properties?.Village}
+                />
+              )}
+            </div>
+          </div>
+        )}
+        <div className="map-legend">
+          {Object.entries(layerConfig)
+            .filter((a) => !["Unauthorized", "BDA Boundary"].includes(a[0]))
+            .sort(([n1, { order: ord1 }], [n2, { order: ord2 }]) =>
+              ord1 < ord2 ? -1 : 1
+            )
+            .map(([name, style]) => {
+              const hidden = hiddenFolders.has(name);
+              return (
+                <div
+                  key={name}
+                  className={`map-legend-item ${
+                    hidden ? "map-legend-item-hidden" : ""
+                  }`}
+                  onClick={() => toggleFolder(name)}
+                >
+                  <span
+                    className="map-legend-swatch"
+                    style={{ background: hidden ? "#ccc" : style.color }}
+                  >
+                    {!hidden && (
+                      <Check
+                        size={10}
+                        strokeWidth={3}
+                        color={layerConfig[name]?.textColor}
+                      />
+                    )}
+                  </span>
+                  <span>
+                    {name === "BDA Boundary"
+                      ? "Show BDA boundary"
+                      : layerConfig[name]?.label}
+                  </span>
+                </div>
+              );
+            })}
+          {Object.entries(layerConfig)
+            .filter((a) => ["BDA Boundary"].includes(a[0]))
+            .map(([name, style]) => {
+              const hidden = hiddenFolders.has(name);
+              return (
+                <div
+                  key={name}
+                  className={`map-legend-item ${
+                    hidden ? "map-legend-item-hidden" : ""
+                  }`}
+                  onClick={() => toggleFolder(name)}
+                >
+                  <span
+                    className="map-legend-swatch"
+                    style={{ background: hidden ? "#ccc" : style.color }}
+                  >
+                    {!hidden && (
+                      <Check
+                        size={10}
+                        strokeWidth={3}
+                        color={layerConfig[name]?.textColor}
+                      />
+                    )}
+                  </span>
+                  <span>
+                    {name === "BDA Boundary"
+                      ? "Show BDA boundary"
+                      : layerConfig[name]?.label}
+                  </span>
+                </div>
+              );
+            })}
+        </div>
+      </div>
       <FlyToLayout
         selectedLayout={selectedLayout}
         boundaries={boundaries}
@@ -328,75 +484,6 @@ function MapView({
         mapExpanded={mapExpanded}
         isResizingRef={isResizingRef}
       />
-      <div className="map-legend">
-        {Object.entries(layerConfig)
-          .filter((a) => !["Unauthorized", "BDA Boundary"].includes(a[0]))
-          .sort(([n1, { order: ord1 }], [n2, { order: ord2 }]) =>
-            ord1 < ord2 ? -1 : 1
-          )
-          .map(([name, style]) => {
-            const hidden = hiddenFolders.has(name);
-            return (
-              <div
-                key={name}
-                className={`map-legend-item ${
-                  hidden ? "map-legend-item-hidden" : ""
-                }`}
-                onClick={() => toggleFolder(name)}
-              >
-                <span
-                  className="map-legend-swatch"
-                  style={{ background: hidden ? "#ccc" : style.color }}
-                >
-                  {!hidden && (
-                    <Check
-                      size={10}
-                      strokeWidth={3}
-                      color={layerConfig[name]?.textColor}
-                    />
-                  )}
-                </span>
-                <span>
-                  {name === "BDA Boundary"
-                    ? "Show BDA boundary"
-                    : layerConfig[name]?.label}
-                </span>
-              </div>
-            );
-          })}
-        {Object.entries(layerConfig)
-          .filter((a) => ["BDA Boundary"].includes(a[0]))
-          .map(([name, style]) => {
-            const hidden = hiddenFolders.has(name);
-            return (
-              <div
-                key={name}
-                className={`map-legend-item ${
-                  hidden ? "map-legend-item-hidden" : ""
-                }`}
-                onClick={() => toggleFolder(name)}
-              >
-                <span
-                  className="map-legend-swatch"
-                  style={{ background: hidden ? "#ccc" : style.color }}
-                >
-                  {!hidden && (
-                    <Check
-                      size={10}
-                      strokeWidth={3}
-                      color={layerConfig[name]?.textColor}
-                    />
-                  )}
-                </span>
-                <span>
-                  {name === "BDA Boundary"
-                    ? "Show BDA boundary"
-                    : layerConfig[name]?.label}
-                </span>
-              </div>
-            );
-          })}
-      </div>
     </MapContainer>
   );
 }
