@@ -1,6 +1,6 @@
 import JSZip from "jszip";
 import toGeoJSON from "@mapbox/togeojson";
-import { formatName } from "./utils";
+import { formatDate, formatName } from "./utils";
 
 /**
  * Parses a KMZ file (compressed KML) and converts it to GeoJSON
@@ -84,6 +84,9 @@ export function parseKML(kmlText) {
         p["Name of Layout"] = formatName(p["Name of Layout"]);
       // if (p.vil_eng) p.vil_eng = formatName(p.vil_eng);
       if (p.name) p.name = formatName(p.name);
+      if (p.Division) p.Division = formatName(p.Division);
+      if (p?.["Date of Approval"])
+        p["Date of Approval"] = formatDate(p["Date of Approval"]);
       allFeatures.push(feature);
     }
   }

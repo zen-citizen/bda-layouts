@@ -12,11 +12,11 @@ export const folders = {
 export const layerConfig = {
   [folders["GBA Allotted"]]: {
     order: 2,
-    label: "GBA Allotted",
-    color: "oklch(72.3% 0.219 149.579)",
+    label: "BDA Allotted (GBA jurisdiction)",
+    color: "#0284c7",
     weight: 2,
     opacity: 0.8,
-    fillColor: "oklch(72.3% 0.219 149.579)",
+    fillColor: "#0284c7",
     fillOpacity: 0.15,
     textColor: "#fff"
   },
@@ -32,7 +32,7 @@ export const layerConfig = {
   },
   [folders["GBA Approved"]]: {
     order: 4,
-    label: "GBA Approved",
+    label: "BDA Approved (GBA jurisdiction)",
     color: "#d97706",
     weight: 2,
     opacity: 0.8,
@@ -273,3 +273,14 @@ export function normalizeLayoutName(layout) {
 
   return normalized;
 }
+
+export const formatDate = (dateString) => {
+  let a = dateString.split(" ")?.[0];
+  if (!a) return null;
+  let b = a.replaceAll("/", "-");
+  return Intl.DateTimeFormat("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  }).format(new Date(b));
+};

@@ -33,15 +33,25 @@ function MapPage() {
   // Scroll the active item into view when selectedLayout changes
   useEffect(() => {
     if (!selectedLayout || !sidebarListRef.current) return;
-    setFolderFilter("");
-    setSearchQuery("");
-    const active = sidebarListRef.current.querySelector(
-      ".sidebar-layout-item.active"
-    );
-    if (active) {
-      active.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (!!folderFilter && selectedLayout.folder !== folderFilter) {
+      setFolderFilter("");
     }
+    setTimeout(() => {
+      const active = sidebarListRef.current.querySelector(
+        ".sidebar-layout-item.active"
+      );
+      if (active) {
+        active.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }, 500);
   }, [selectedLayout]);
+
+  useEffect(() => {
+    if (selectedLayout) return;
+    setTimeout(() => {
+      sidebarListRef?.current?.scrollTo(0, 0);
+    }, 250);
+  }, [selectedLayout, folderFilter]);
 
   // Load KML data at page level so sidebar + map can share it
   useEffect(() => {
@@ -189,7 +199,7 @@ function MapPage() {
         <Search size={16} className="sidebar-search-icon" />
         <input
           type="text"
-          placeholder="Search layouts..."
+          placeholder="Search layouts by name..."
           className="sidebar-search-input"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

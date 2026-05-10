@@ -139,7 +139,7 @@ function MapResizeHandler({ mapExpanded, isResizingRef }) {
 const showMetadataConditionally = (feature) => {
   let html = "";
   if (feature.properties.Division) {
-    html += `<br /><span>Division:&nbsp;</span><span>${feature.properties.Division}</span>`;
+    html += `<br /><span>Division:&nbsp;</span><span class="capitalize">${feature.properties.Division}</span>`;
   }
   if (feature.properties.Taluk) {
     html += `<br /><span>Taluk:&nbsp;</span><span>${feature.properties.Taluk}</span>`;
@@ -286,6 +286,7 @@ function MapView({
       return feat?.properties?.["Name of Layout"] == selectedLayout?.name;
     });
   }, [selectedLayout, boundaries]);
+  console.log({ selectedLayoutFull });
 
   const resetMapKey = useRef(0);
 
@@ -375,13 +376,19 @@ function MapView({
               {selectedLayoutFull?.properties?.folder && (
                 <RenderLabelValue
                   label="Type"
-                  value={selectedLayoutFull.properties?.folder}
+                  value={
+                    layerConfig[selectedLayoutFull.properties?.folder]?.label
+                  }
                 />
               )}
               {selectedLayoutFull?.properties?.Division && (
                 <RenderLabelValue
                   label="Division"
-                  value={selectedLayoutFull.properties?.Division}
+                  value={
+                    <span className="capitalize">
+                      {selectedLayoutFull.properties?.Division}
+                    </span>
+                  }
                 />
               )}
               {selectedLayoutFull?.properties?.Taluk && (
@@ -404,6 +411,26 @@ function MapView({
                   value={selectedLayoutFull.properties?.Village?.split(
                     ","
                   )?.join(", ")}
+                />
+              )}
+              {selectedLayoutFull?.properties?.Extant && (
+                <RenderLabelValue
+                  label="Extant"
+                  value={selectedLayoutFull.properties?.Extant?.split(
+                    ","
+                  )?.join(", ")}
+                />
+              )}
+              {selectedLayoutFull?.properties?.["Date of Approval"] && (
+                <RenderLabelValue
+                  label="Date of Approval"
+                  value={selectedLayoutFull.properties?.["Date of Approval"]}
+                />
+              )}
+              {selectedLayoutFull?.properties?.["Use Type"] && (
+                <RenderLabelValue
+                  label="Use Type"
+                  value={selectedLayoutFull.properties?.["Use Type"]}
                 />
               )}
             </div>
