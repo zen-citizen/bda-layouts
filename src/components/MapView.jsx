@@ -413,6 +413,12 @@ function MapView({
                   )?.join(", ")}
                 />
               )}
+              {selectedLayoutFull?.properties?.["Survey_No"] && (
+                <RenderLabelValue
+                  label="Survey Number"
+                  value={selectedLayoutFull.properties?.["Survey_No"]}
+                />
+              )}
               {selectedLayoutFull?.properties?.Extant && (
                 <RenderLabelValue
                   label="Extant"
