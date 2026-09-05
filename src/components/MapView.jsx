@@ -269,7 +269,7 @@ function MapView({
       };
     }
     return {
-      url: "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      url: `https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png?key=${import.meta.env.VITE_CARTO_API_KEY}`,
       attribution: `&copy; Carto.com Basemaps`,
       // url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       // attribution:
